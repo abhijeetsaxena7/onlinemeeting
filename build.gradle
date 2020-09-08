@@ -1,0 +1,32 @@
+plugins {
+	id 'org.springframework.boot' version '2.3.3.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+	id 'java'
+}
+
+group = 'com.libsys'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+ 	compile 'org.apache.commons:commons-lang3:3.9'
+	compile 'com.microsoft.azure:msal4j:1.6.1'
+	compile "javax.json:javax.json-api:1.0"
+    implementation 'com.microsoft.graph:microsoft-graph-auth:0.2.0'
+    implementation 'com.microsoft.graph:microsoft-graph:1.8.0'
+    compile 'com.nimbusds:oauth2-oidc-sdk:6.5'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-web'	
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+	testImplementation 'org.springframework.security:spring-security-test'
+}
+
+test {
+	useJUnitPlatform()
+}
