@@ -27,6 +27,11 @@ import com.microsoft.graph.models.extensions.OnlineMeeting;
 import com.microsoft.graph.options.HeaderOption;
 import com.microsoft.graph.requests.extensions.IOnlineMeetingCollectionRequest;
 
+/**
+ * 
+ * @author Abhijeet Saxena
+ * Class contains methods related to meeting operation in microsoft. * 
+ */
 @RestController("Microsoft_MeetingController")
 @RequestMapping(Constants.VendorPath.MICROSOFT + "/meeting")
 public class MeetingController {
@@ -38,6 +43,20 @@ public class MeetingController {
 	private GraphServiceClientWrapper graphClientWrapper;
 	@Autowired
 	private SessionManagementHelper sessionManagementHelper;
+	
+	/**
+	 * 
+	 * Create a meeting with given subject, start date and end date.
+	 * Meeting is accessed in MsTeams.
+	 * Get IAuthenticationResult object from session.
+	 * Set access token in header.
+	 * Build request and get response.
+	 * 	  
+	 * @param request
+	 * @param response
+	 * @param onlineMeetingModel
+	 * @return If success, HttpStatus 204 and onlineMeetingModel, else HttpStatus 500 and error msg
+	 */
 	@PostMapping("")
 	public ResponseEntity createMeeting(HttpServletRequest request, HttpServletResponse response, @RequestBody OnlineMeetingModel onlineMeetingModel){
 		ResponseEntity resEntity;
@@ -64,6 +83,14 @@ public class MeetingController {
 		return resEntity;
 	}
 	
+	/**
+	 * Deletes a meeting.
+	 * 
+	 * @param request
+	 * @param response
+	 * @param meetingId
+	 * @return If success, HttpStatus 204, Else HttpStatus 500
+	 */
 	@DeleteMapping("")
 	public ResponseEntity deleteMeeting(HttpServletRequest request, HttpServletResponse response, @RequestParam String meetingId){
 		ResponseEntity resEntity;

@@ -2,6 +2,11 @@ package com.libsys.onlinemeeting.config;
 
 import java.util.Date;
 
+/**\
+ * 
+ * @author abhij
+ * This class is used to authenticated state and nonce value in microsoft. 
+ */
 public class StateData {
 
 	private String nonce;

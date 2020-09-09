@@ -32,6 +32,12 @@ import com.microsoft.graph.models.extensions.Group;
 import com.microsoft.graph.options.HeaderOption;
 import com.microsoft.graph.requests.extensions.IGroupCollectionRequest;
 
+/**
+ * 
+ * @author Abhijeet Saxena
+ * Class contains methods related to group operations in microsoft.
+ * Operations like create, delete, assign owner/member and delete owner/member
+ */
 @RestController("Microsoft_GroupController")
 @RequestMapping(Constants.VendorPath.MICROSOFT +"/group")
 public class GroupController {
@@ -46,6 +52,17 @@ public class GroupController {
 	@Autowired
 	SessionManagementHelper sessionManagementHelper;
 	
+	/**
+	 * Create a group in microsoft AAD(azure active directory)
+	 * Get IAuthenticationResult object from session.
+	 * Set details in group object of microsoft.
+	 * Build request and get response.
+	 * 
+	 * @param request
+	 * @param response
+	 * @param groupModel
+	 * @return If success, HttpStatus 201 and GroupModel ,else HttpStatus 500 and error msg
+	 */
 	@PostMapping("")
 	public ResponseEntity createGroup(HttpServletRequest request, HttpServletResponse response, @RequestBody GroupModel groupModel){
 		ResponseEntity resEntity;
@@ -74,6 +91,17 @@ public class GroupController {
 		return resEntity;
 	}
 	
+	/**
+	 * Delete group in microsoft AAD.
+	 * Get IAuthenticationResult object from session.
+	 * set groupId 
+	 * Build request and get response.
+	 * 
+	 * @param request
+	 * @param response
+	 * @param groupId
+	 * @return If success, HttpStatus 204 ,else HttpStatus 500 and error msg
+	 */
 	@DeleteMapping("")
 	public ResponseEntity<String> deleteGroup(HttpServletRequest request, HttpServletResponse response, @RequestParam String groupId){
 		ResponseEntity<String> resEntity;
@@ -91,6 +119,18 @@ public class GroupController {
 		return resEntity;
 	}
 	
+	/**
+	 * Assign group owner to the group.
+	 * Get IAuthenticationResult object from session.
+	 * Create directory object and set groupId
+	 * Build request and get response.
+	 * 
+	 * @param request
+	 * @param response
+	 * @param groupId
+	 * @param userId
+	 * @return If success, HttpStatus 204 ,else HttpStatus 500 and error msg
+	 */
 	@PostMapping("/owner")
 	public ResponseEntity<String> addGroupOwner(HttpServletRequest request, HttpServletResponse response, @RequestParam String groupId, @RequestParam String userId){
 		ResponseEntity<String> resEntity;
@@ -111,6 +151,17 @@ public class GroupController {
 		return resEntity;
 	}
 	
+	/**
+	 * Add members to group. 
+	 * Get IAuthenticationResult object from session.
+	 * Set userId in members and set in group object
+	 * Build request and get response.
+	 * @param request
+	 * @param response
+	 * @param groupId
+	 * @param memberIds
+	 * @return If success, HttpStatus 204 ,else HttpStatus 500 and error msg
+	 */
 	@PostMapping("/member")
 	public ResponseEntity<String> addGroupMember(HttpServletRequest request, HttpServletResponse response, @RequestParam String groupId, @RequestParam List<String> memberIds){
 		ResponseEntity<String> resEntity;
@@ -135,6 +186,17 @@ public class GroupController {
 		return resEntity;
 	}
 	
+	/**
+	 * Remove group owner from the group.
+	 * Get IAuthenticationResult object from session.
+	 * Set user to remove from group.
+	 * Build request and get response.
+	 * @param request
+	 * @param response
+	 * @param groupId
+	 * @param userId
+	 * @return If success, HttpStatus 204 ,else HttpStatus 500 and error msg
+	 */
 	@DeleteMapping("/owner")
 	public ResponseEntity<String> deleteGroupOwner(HttpServletRequest request, HttpServletResponse response, @RequestParam String groupId, @RequestParam String userId){
 		ResponseEntity<String> resEntity;
@@ -152,6 +214,17 @@ public class GroupController {
 		return resEntity;
 	}
 	
+	/**
+	 * Remove member from the group.
+	 * Get IAuthenticationResult object from session.
+	 * Set memberId. 
+	 * Build request and get response.
+	 * @param request
+	 * @param response
+	 * @param groupId
+	 * @param memberId
+	 * @return If success, HttpStatus 204 ,else HttpStatus 500 and error msg
+	 */
 	@DeleteMapping("/member")
 	public ResponseEntity<String> deleteGroupMember(HttpServletRequest request, HttpServletResponse response, @RequestParam String groupId, @RequestParam String memberId){
 		ResponseEntity<String> resEntity;

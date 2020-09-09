@@ -28,7 +28,13 @@ public class AuthController {
 		this.webexConfig = webexConfig;
 		this.webex = webex;
 	}
-
+	/**
+	 * @param request Http servlet request 
+	 * @param response Http servlet response
+	 * 
+	 * This method gets the redirect response. 
+	 * Response is then redirected to redirectResponseUri with use emailId and sessionId in params 
+	 */
 	@GetMapping("/redirectUri")
 	public void sendRedirectResponse(HttpServletRequest request, HttpServletResponse response) {
 		String accessToken = webex.getAccessTokenValueFromSession(request);
@@ -37,14 +43,13 @@ public class AuthController {
 		Person person = spark.people().path("/me").get();
 		
 		try {			
-			request.setAttribute("email",person.getEmails()[0]);
-			response.sendRedirect(webexConfig.getRedirectResponseUri());
+			response.sendRedirect(webexConfig.getRedirectResponseUri()+"?email = "+person.getEmails()[0]+"&sessionId="+request.getSession().getId());
+			System.out.println(request.getSession().getId());
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 		
-//		return request.getHeader(HttpHeaders.COOKIE);
 	}
 
 }

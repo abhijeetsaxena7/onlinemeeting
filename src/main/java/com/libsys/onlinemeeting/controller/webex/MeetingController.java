@@ -20,6 +20,10 @@ import com.libsys.onlinemeeting.config.vendor.webex.sdk.Meeting;
 import com.libsys.onlinemeeting.config.vendor.webex.sdk.Spark;
 import com.libsys.onlinemeeting.model.OnlineMeetingModel;
 
+/**
+ * @author Abhijeet Saxena
+ * Class containing meeting related operations.
+ */
 @RestController("Webex_MeetingController")
 @RequestMapping(Constants.VendorPath.WEBEX + "/meeting")
 public class MeetingController {
@@ -32,6 +36,15 @@ public class MeetingController {
 		this.webex = webex;
 	}
 	
+	/**
+	 * Create a meeting in webex teams.
+	 * Get access token from session.
+	 * Build spark object from token.
+	 * Set meeting object and call request. 
+	 * @param request
+	 * @param meetingModel
+	 * @return If success, httpstatus 201 and onlineMeetingModel , else httpstatus 500 and error msg 
+	 */
 	@PostMapping("")
 	public ResponseEntity createMeeting(HttpServletRequest request, @RequestBody OnlineMeetingModel meetingModel) {
 		ResponseEntity resEntity;
@@ -55,6 +68,15 @@ public class MeetingController {
 		return resEntity;
 	} 
 	
+	/**
+	 * Update meeting details in webex meeting
+	 * Get access token from session.
+	 * Build spark object from token.
+	 * Set meeting object and call request. 
+	 * @param request
+	 * @param meetingModel
+	 * @return If success, httpstatus 201 and onlineMeetingModel , else httpstatus 500 and error msg
+	 */
 	@PutMapping("")
 	public ResponseEntity updateMeeting(HttpServletRequest request, @RequestBody OnlineMeetingModel meetingModel) {
 		ResponseEntity resEntity;
@@ -76,6 +98,15 @@ public class MeetingController {
 		return resEntity;
 	}
 	
+	/**
+	 * Delete meeting in webex teams
+	 * Get access token from session.
+	 * Build spark object from token.
+	 * Set meeting Id and call request. 
+	 * @param request
+	 * @param meetingId
+	 * @return
+	 */
 	@DeleteMapping("")
 	public ResponseEntity deleteMeeting(HttpServletRequest request, @RequestParam String meetingId) {
 		ResponseEntity resEntity;

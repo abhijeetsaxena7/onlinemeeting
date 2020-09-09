@@ -17,6 +17,10 @@ import com.libsys.onlinemeeting.config.vendor.webex.WebexConfiguration;
 import com.libsys.onlinemeeting.config.vendor.webex.sdk.Spark;
 import com.libsys.onlinemeeting.config.vendor.webex.sdk.TeamMembership;
 
+/**
+ * @author Abhijeet Saxena
+ * Contains methods related team membership operations in webex teams.
+ */
 @RestController("Webex_TeamMembershipController")
 @RequestMapping(Constants.VendorPath.WEBEX + "/membership")
 public class TeamMembershipController {
@@ -29,6 +33,17 @@ public class TeamMembershipController {
 		this.webex = webex;
 	}
 	
+	/**
+	 * Add a user to team in webex teams.
+	 * Get access token from session.
+	 * Build spark object from token.
+	 * Set teamMembership object and call request.
+	 * @param request
+	 * @param teamId
+	 * @param personId
+	 * @param isOwner whether team member is team owner or not
+	 * @return If success, HttpStatus 201 and membershipId, else HttpStatus500 and error msg.
+	 */
 	@PostMapping("")
 	public ResponseEntity addToTeam(HttpServletRequest request, @RequestParam String teamId, @RequestParam String personId, @RequestParam boolean isOwner ) {
 		ResponseEntity resEntity;
@@ -51,6 +66,15 @@ public class TeamMembershipController {
 		return resEntity;
 	}
 	
+	/**
+	 * Remove a user from team in webex teams.
+	 * Get access token from session.
+	 * Build spark object from token.
+	 * Pass teamMembership id and call request.
+	 * @param request
+	 * @param membershipId
+	 * @return
+	 */
 	@DeleteMapping("")
 	public ResponseEntity deleteFromTeam(HttpServletRequest request, @RequestParam String membershipId) {
 		ResponseEntity resEntity;

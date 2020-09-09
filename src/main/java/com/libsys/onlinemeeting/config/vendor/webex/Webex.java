@@ -42,13 +42,13 @@ public class Webex implements Vendor{
 
 	@Override
 	public void sendAuthRedirect(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		String state = UUID.randomUUID().toString();
-		String nonce = UUID.randomUUID().toString();
+//		String state = UUID.randomUUID().toString();
+//		String nonce = UUID.randomUUID().toString();
 		// state parameter to validate response from Authorization server and nonce
 		// parameter to validate idToken
-		sessionManagementHelper.storeStateAndNonceInSession(request.getSession(), state, nonce);
+//		sessionManagementHelper.storeStateAndNonceInSession(request.getSession(), state, nonce);
 		response.setStatus(302);
-		String authUrl = buildAuthorizationUrl(state);
+		String authUrl = buildAuthorizationUrl(null);
 		response.sendRedirect(authUrl);
 	}
 	
@@ -57,7 +57,9 @@ public class Webex implements Vendor{
 		queryParams.add(Constants.QueryParams.RESPONSE_TYPE, "code");
 		queryParams.add(Constants.QueryParams.CLIENT_ID, webexConfiguration.getClientId());
 		queryParams.add(Constants.QueryParams.REDIRECT_URI, webexConfiguration.getRedirectUri());
-		queryParams.add(Constants.QueryParams.STATE, state);
+		if(state!=null) {
+			queryParams.add(Constants.QueryParams.STATE, state);
+		}
 		queryParams.add(Constants.QueryParams.SCOPE, getAllScopes());
 		
 		return helperMethods.getUri(webexConfiguration.getAuthUrl(), queryParams);
@@ -78,7 +80,10 @@ public class Webex implements Vendor{
 	
 	private String getAllScopes() {
 		StringBuilder scopeBuilder = new StringBuilder();
-		//TODO
+		scopeBuilder.append(WebexScopes.Meeting.MEETING_WRITE.value).append(" ");
+		scopeBuilder.append(WebexScopes.Team.ADMIN_TEAM_WRITE.value).append(" ");
+		scopeBuilder.append(WebexScopes.TeamMembership.MEMBER_WRITE.value).append(" ");
+		scopeBuilder.append(WebexScopes.User.ADMIN_PEOPLE_WRITE.value);
 		return scopeBuilder.toString();
 	}
 
@@ -97,7 +102,7 @@ public class Webex implements Vendor{
 	public void processAuthCodeRedirect(HttpServletRequest httpRequest) throws Throwable {
 		String authCode = httpRequest.getParameter(Constants.QueryParams.AUTH_CODE);
 		String state = httpRequest.getParameter(Constants.QueryParams.STATE);
-		sessionManagementHelper.validateState(httpRequest.getSession(),state);
+//		sessionManagementHelper.validateState(httpRequest.getSession(),state);
 		
 		AccessToken accessToken = getAccessToken(authCode,false,null);
 		sessionManagementHelper.setSessionPrincipal(httpRequest, accessToken);
@@ -108,7 +113,7 @@ public class Webex implements Vendor{
 		HttpHeaders headers = new HttpHeaders();
 		headers.add(HttpHeaders.CONTENT_TYPE, Constants.HeaderValue.APPLICATION_X_WWW_FORM_ENCODED);
 		
-		LinkedMultiValueMap<String, String> queryParams = new LinkedMultiValueMap<String, String>();
+		LinkedMultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
 		if(acquireRefreshToken) {
 			queryParams.add(Constants.QueryParams.GRANT_TYPE, "refreshToken");
 			queryParams.add(Constants.QueryParams.REFRESH_TOKEN, refreshToken);

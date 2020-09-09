@@ -30,6 +30,12 @@ import com.microsoft.graph.models.extensions.User;
 import com.microsoft.graph.options.HeaderOption;
 import com.microsoft.graph.requests.extensions.IUserCollectionRequest;
 
+/**
+ * 
+ * @author Abhijeet Saxena
+ * Class contains user related operations in microsoft. 
+ * User with role UserAdministrater permissions can perform these operations.
+ */
 @RestController("Microsoft_UserController")
 @RequestMapping(Constants.VendorPath.MICROSOFT +"/user")
 public class UserController {
@@ -42,6 +48,18 @@ public class UserController {
 	@Autowired
 	private SessionManagementHelper sessionManagementHelper;
 
+	/**
+	 * Create a user in microsoft AAD.
+	 * Get IAuthenticationResult object from session.
+	 * Set User object details from userModel.
+	 * Set AccessToken in header.
+	 * Build request and get Response
+	 * 
+	 * @param request
+	 * @param response
+	 * @param userModel
+	 * @return If success HttpStatus 201 and UserModel, else, HttpStatus 500 and error msg.
+	 */
 	@PostMapping("")
 	public ResponseEntity createUser(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody UserModel userModel) {
@@ -79,6 +97,18 @@ public class UserController {
 
 	}
 
+	/**
+	 * Delete a user from microsoft AAD.
+	 * Get IAuthenticationResult object from session.
+	 * Set UserId.
+	 * Set AccessToken in header.
+	 * Build request and get Response
+	 * 
+	 * @param request
+	 * @param response
+	 * @param userId
+	 * @return If success, HttpStatus 204, else HttpStatus 500 and error msg.
+	 */
 	@DeleteMapping("")
 	public ResponseEntity<String> deleteUser(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam String userId) {
@@ -99,6 +129,20 @@ public class UserController {
 		return resEntity;
 	}
 
+	/**
+	 * Assign role to user.
+	 * Get IAuthenticationResult object from session.
+	 * Set appRoleAssignment object.
+	 * Set AccessToken in header.
+	 * Build request and get Response
+	 *  
+	 * @param request
+	 * @param response
+	 * @param roleId
+	 * @param assignerId
+	 * @param assignedToId
+	 * @return If success, HttpStatus 204, else HttpStatus 500 and error msg.
+	 */
 	@PostMapping("/role")
 	public ResponseEntity<String> assignRoleToUser(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam String roleId, @RequestParam String assignerId, @RequestParam String assignedToId) {

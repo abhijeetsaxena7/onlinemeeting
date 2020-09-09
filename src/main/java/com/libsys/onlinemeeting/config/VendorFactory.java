@@ -7,6 +7,11 @@ import com.libsys.onlinemeeting.config.constant.Constants;
 import com.libsys.onlinemeeting.config.vendor.microsoft.Microsoft;
 import com.libsys.onlinemeeting.config.vendor.webex.Webex;
 
+/**
+ * 
+ * @author Abhijeet Saxena
+ * This class is used to obtain vendor instance based on vendor id.
+ */
 @Component
 public class VendorFactory {
 	

@@ -19,6 +19,11 @@ import com.libsys.onlinemeeting.config.vendor.webex.sdk.Spark;
 import com.libsys.onlinemeeting.config.vendor.webex.sdk.Team;
 import com.libsys.onlinemeeting.model.GroupModel;
 
+/**
+ * 
+ * @author Abhijeet Saxena
+ * Contains method related to team operationg in webex teams
+ */
 @RestController("Webex_TeamController")
 @RequestMapping(Constants.VendorPath.WEBEX + "/team")
 public class TeamController {
@@ -31,6 +36,15 @@ public class TeamController {
 		this.webex = webex;
 	}
 
+	/**
+	 * Create a team in webex teams.
+	 * Get access token from session.
+	 * Build spark object from token.
+	 * Set team object and call request.
+	 * @param request
+	 * @param groupModel
+	 * @return If success, HttpStatus 201 and GroupModel, else httpStatus 500 and error msg. 
+	 */
 	@PostMapping("")
 	public ResponseEntity createTeam(HttpServletRequest request, @RequestBody GroupModel groupModel) {
 		ResponseEntity resEntity;
@@ -51,8 +65,17 @@ public class TeamController {
 		return resEntity;
 	}
 	
+	/**
+	 * Delete a team from webex teams.
+	 * Get access token from session.
+	 * Build spark object from token.
+	 * Pass teamId and call request.
+	 * @param request
+	 * @param teamId
+	 * @return If success, HttpStatus 204 else, HttpStatus 500
+	 */
 	@DeleteMapping("")
-	public ResponseEntity deleteUser(HttpServletRequest request, @RequestParam String teamId) {
+	public ResponseEntity deleteTeam(HttpServletRequest request, @RequestParam String teamId) {
 		ResponseEntity resEntity;
 		try {
 			String accessToken = webex.getAccessTokenValueFromSession(request);

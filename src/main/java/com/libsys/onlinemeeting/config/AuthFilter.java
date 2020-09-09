@@ -17,6 +17,11 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * 
+ * @author abhij
+ * Filter is used to manage redirection of requests based on different stages of OAuth2.0
+ */
 @Component
 public class AuthFilter implements Filter {
 
@@ -34,31 +39,35 @@ public class AuthFilter implements Filter {
 			HttpServletRequest httpRequest = (HttpServletRequest) request;
 			HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-			String currentUri = httpRequest.getRequestURL().toString();
 			String path = httpRequest.getServletPath();
-			String queryStr = httpRequest.getQueryString();
-			String fullUrl = currentUri + (queryStr != null ? "?" + queryStr : "");
-
+			
+			//exclude paths from filter 
 			if (excludedUrls.contains(path)) {
 				chain.doFilter(request, response);
 				return;
 			}
 
 			try {
+				//get vendor id to obtain instance of vendor
 				if (!helper.hasVendor(httpRequest)) {
 					helper.setVendor(httpRequest, path);
 				}
 				Vendor vendor = vendorFactory.getInstance(helper.getVendor(httpRequest));
 
+				//do not change the order of checks
+				
+				//check if auth code exists in param, use it to obtain access token
 				if (vendor.containsAuthCode(httpRequest)) {
 					vendor.processAuthCodeRedirect(httpRequest);
 					chain.doFilter(request, response);
 					return;
 				}
+				//if request is not authenticated, then send to login page
 				if (!vendor.isAuthenticated(httpRequest)) {
 					vendor.sendAuthRedirect(httpRequest, httpResponse);
 					return;
 				}
+				//if access token expired, then obtain new token using refresh token.
 				if(vendor.isAccessTokenExpired(httpRequest)) {
 					vendor.acquireTokenFromRefreshToken(httpRequest);
 					chain.doFilter(request, response);

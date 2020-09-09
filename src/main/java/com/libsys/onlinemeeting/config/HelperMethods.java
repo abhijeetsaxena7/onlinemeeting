@@ -12,19 +12,37 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.libsys.onlinemeeting.config.constant.Constants;
 import com.libsys.onlinemeeting.config.constant.Constants.Vendors;
 
-
+/**
+ * 
+ * @author Abhijeet Saxena
+ *	Contains utility methods to be used in project.
+ */
 @Component
 public class HelperMethods {
 	
-	
+	/**
+	 * Check whether vendor attribute is present in session.
+	 * @param request
+	 * @return
+	 */
 	public boolean hasVendor(HttpServletRequest request) {
 		return request.getSession()!=null && request.getSession().getAttribute(Constants.Attributes.VENDOR)!=null;
 	}
 	
+	/**
+	 * Get vendor Id from session attribute
+	 * @param request
+	 * @return
+	 */
 	public int getVendor(HttpServletRequest request) {
 		return (int)request.getSession().getAttribute(Constants.Attributes.VENDOR);
 	}
 	
+	/**
+	 * Set vendor Id in request session attribute based on path.
+	 * @param request
+	 * @param path
+	 */
 	public void setVendor(HttpServletRequest request, String path) {
 		Vendors vendor=null;
 		if(path.contains("/"+Vendors.Microsoft.getPath()+"/")|| path.contains("/login.microsoftonline.com/")){
@@ -39,6 +57,12 @@ public class HelperMethods {
 		request.getSession(true).setAttribute(Constants.Attributes.VENDOR, vendor.getId());
 	}
 	
+	/**
+	 * Build a url based on url and query params. 
+	 * @param url
+	 * @param queryParams
+	 * @return encoded url
+	 */
 	public String getUri(String url, MultiValueMap<String, String> queryParams) {
 		return UriComponentsBuilder.fromHttpUrl(url).queryParams(queryParams).build().encode().toString();
 	}

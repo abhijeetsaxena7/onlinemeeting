@@ -19,6 +19,11 @@ import com.libsys.onlinemeeting.config.vendor.webex.sdk.Person;
 import com.libsys.onlinemeeting.config.vendor.webex.sdk.Spark;
 import com.libsys.onlinemeeting.model.UserModel;
 
+/**
+ * 
+ * @author Abhijeet Saxena
+ * Contains methods related to user operations in webex admin portal.
+ */
 @RestController("Webex_UserController")
 @RequestMapping(Constants.VendorPath.WEBEX + "/user")
 public class UserController {
@@ -31,6 +36,15 @@ public class UserController {
 		this.webex = webex;
 	}
 	
+	/**
+	 * Create a user in webex admin.
+	 * Get access token from session.
+	 * Build spark object from token.
+	 * Set Person from userModel object and call request.
+	 * @param request
+	 * @param userModel
+	 * @return
+	 */
 	@PostMapping("")
 	public ResponseEntity createUser(HttpServletRequest request, @RequestBody UserModel userModel) {
 		
@@ -54,6 +68,15 @@ public class UserController {
 		return resEntity;
 	}
 	
+	/**
+	 * Delete a user in webex admin.
+	 * Get access token from session.
+	 * Build spark object from token.
+	 * Pass personId and call request.
+	 * @param request
+	 * @param personId
+	 * @return
+	 */
 	@DeleteMapping("")
 	public ResponseEntity deleteUser(HttpServletRequest request, @RequestParam String personId) {
 		ResponseEntity resEntity;

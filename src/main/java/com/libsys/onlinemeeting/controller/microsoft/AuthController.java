@@ -15,6 +15,11 @@ import com.libsys.onlinemeeting.config.constant.Constants;
 import com.libsys.onlinemeeting.config.vendor.microsoft.MicrosoftConfiguration;
 import com.microsoft.aad.msal4j.IAuthenticationResult;
 
+/**
+ * 
+ * @author Abhijeet Saxena
+ *	Contains authorization methods related to redirect in OAuth2.0 process.
+ */
 @RestController("Microsoft_AuthController")
 @RequestMapping(Constants.VendorPath.MICROSOFT +"/auth")
 public class AuthController {
@@ -22,6 +27,13 @@ public class AuthController {
 	@Autowired
 	private MicrosoftConfiguration msConfig;
 	
+	/**
+	 * @param request Http servlet request 
+	 * @param response Http servlet response
+	 * 
+	 * This method gets the redirect response. 
+	 * Response is then redirected to redirectResponseUri with use emailId and sessionId in params 
+	 */
 	@GetMapping("/redirectUri")
 	public void sendRedirectResponse(HttpServletRequest request, HttpServletResponse response) {
 		
@@ -33,13 +45,5 @@ public class AuthController {
 			throw new RuntimeException(e);
 		}
 		
-//		return request.getHeader(HttpHeaders.COOKIE);
-		
-		
 	}
-	
-	public String getSessionId(HttpServletRequest request) {
-		return request.getHeader(HttpHeaders.COOKIE);
-	}
-
 }
