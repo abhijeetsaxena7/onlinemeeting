@@ -26,8 +26,10 @@ public class AuthController {
 	public void sendRedirectResponse(HttpServletRequest request, HttpServletResponse response) {
 		
 		try {			
-			request.setAttribute("email", ((IAuthenticationResult)request.getSession().getAttribute("principal")).account().username());
-			response.sendRedirect(msConfig.getRedirectResponseUri());
+			IAuthenticationResult result = (IAuthenticationResult) request.getSession().getAttribute("principal");
+			System.out.println(result.accessToken());
+			System.out.println(result.account().username());			
+			response.sendRedirect(msConfig.getRedirectResponseUri()+"?email="+result.account().username());
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
