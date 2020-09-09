@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.JsonArray;
 import com.libsys.onlinemeeting.config.HelperMethods;
+import com.libsys.onlinemeeting.config.SessionManagementHelper;
 import com.libsys.onlinemeeting.config.constant.Constants;
 import com.libsys.onlinemeeting.config.vendor.microsoft.GraphServiceClientWrapper;
 import com.libsys.onlinemeeting.config.vendor.microsoft.Microsoft;
@@ -42,11 +43,15 @@ public class GroupController {
 	private GraphServiceClientWrapper graphClientWrapper;
 	@Autowired
 	private MicrosoftConfiguration msConfig;
+	@Autowired
+	SessionManagementHelper sessionManagementHelper;
+	
 	@PostMapping("")
 	public ResponseEntity createGroup(HttpServletRequest request, HttpServletResponse response, @RequestBody GroupModel groupModel){
 		ResponseEntity resEntity;
 		try {
-			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request, microsoft.getReqScopes(MicrosoftScopes.Group.Create.values()));			
+//			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request, microsoft.getReqScopes(MicrosoftScopes.Group.Create.values()));			
+			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getAuthSessionObject(request);
 			Group group = new Group();
 			group.displayName = groupModel.getDisplayName();
 			group.description = groupModel.getDescription();
@@ -73,7 +78,8 @@ public class GroupController {
 	public ResponseEntity<String> deleteGroup(HttpServletRequest request, HttpServletResponse response, @RequestParam String groupId){
 		ResponseEntity<String> resEntity;
 		try {
-			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request, microsoft.getReqScopes(MicrosoftScopes.Group.Delete.values()));			
+//			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request, microsoft.getReqScopes(MicrosoftScopes.Group.Delete.values()));			
+			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getAuthSessionObject(request);
 			
 			HeaderOption option = new HeaderOption("Authorization", "Bearer " + result.accessToken());			
 			graphClientWrapper.getGraphServiceClient().groups(groupId).buildRequest(Arrays.asList(option)).delete();
@@ -89,7 +95,8 @@ public class GroupController {
 	public ResponseEntity<String> addGroupOwner(HttpServletRequest request, HttpServletResponse response, @RequestParam String groupId, @RequestParam String userId){
 		ResponseEntity<String> resEntity;
 		try {
-			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request, microsoft.getReqScopes(MicrosoftScopes.Group.AddOwner.values()));			
+//			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request, microsoft.getReqScopes(MicrosoftScopes.Group.AddOwner.values()));			
+			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getAuthSessionObject(request);
 			
 			DirectoryObject userObject= new DirectoryObject();
 			userObject.id =userId;
@@ -108,7 +115,8 @@ public class GroupController {
 	public ResponseEntity<String> addGroupMember(HttpServletRequest request, HttpServletResponse response, @RequestParam String groupId, @RequestParam List<String> memberIds){
 		ResponseEntity<String> resEntity;
 		try {
-			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request, microsoft.getReqScopes(MicrosoftScopes.Group.AddMember.values()));
+//			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request, microsoft.getReqScopes(MicrosoftScopes.Group.AddMember.values()));
+			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getAuthSessionObject(request);
 			
 			JsonArray members = new JsonArray();
 			for(String memberId:memberIds) {
@@ -131,7 +139,8 @@ public class GroupController {
 	public ResponseEntity<String> deleteGroupOwner(HttpServletRequest request, HttpServletResponse response, @RequestParam String groupId, @RequestParam String userId){
 		ResponseEntity<String> resEntity;
 		try {
-			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request, microsoft.getReqScopes(MicrosoftScopes.Group.DeleteOwner.values()));			
+//			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request, microsoft.getReqScopes(MicrosoftScopes.Group.DeleteOwner.values()));			
+			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getAuthSessionObject(request);
 			
 			HeaderOption option = new HeaderOption("Authorization", "Bearer " + result.accessToken());			
 			graphClientWrapper.getGraphServiceClient().groups(groupId).owners(userId).reference().buildRequest(Arrays.asList(option)).delete();
@@ -147,7 +156,8 @@ public class GroupController {
 	public ResponseEntity<String> deleteGroupMember(HttpServletRequest request, HttpServletResponse response, @RequestParam String groupId, @RequestParam String memberId){
 		ResponseEntity<String> resEntity;
 		try {
-			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request, microsoft.getReqScopes(MicrosoftScopes.Group.DeleteMember.values()));
+//			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request, microsoft.getReqScopes(MicrosoftScopes.Group.DeleteMember.values()));
+			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getAuthSessionObject(request);
 			
 			HeaderOption option = new HeaderOption("Authorization", "Bearer " + result.accessToken());			
 			graphClientWrapper.getGraphServiceClient().groups(groupId).members(memberId).reference().buildRequest(Arrays.asList(option)).delete();

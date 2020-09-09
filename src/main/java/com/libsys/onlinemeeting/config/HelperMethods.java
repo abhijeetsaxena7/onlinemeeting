@@ -27,9 +27,9 @@ public class HelperMethods {
 	
 	public void setVendor(HttpServletRequest request, String path) {
 		Vendors vendor=null;
-		if(path.contains("/"+Vendors.Microsoft.getPath()+"/")){
+		if(path.contains("/"+Vendors.Microsoft.getPath()+"/")|| path.contains("/login.microsoftonline.com/")){
 			vendor = Vendors.Microsoft;
-		}else if(path.contains("/"+Vendors.Webex.getPath()+"/")) {
+		}else if(path.contains("/"+Vendors.Webex.getPath()+"/") || path.contains("/webexapis.com/")) {
 			vendor = Vendors.Webex;
 		}
 		

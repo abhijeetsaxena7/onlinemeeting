@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.libsys.onlinemeeting.config.HelperMethods;
+import com.libsys.onlinemeeting.config.SessionManagementHelper;
 import com.libsys.onlinemeeting.config.constant.Constants;
 import com.libsys.onlinemeeting.config.vendor.microsoft.GraphServiceClientWrapper;
 import com.libsys.onlinemeeting.config.vendor.microsoft.Microsoft;
@@ -35,12 +36,14 @@ public class MeetingController {
 	private HelperMethods helper;
 	@Autowired
 	private GraphServiceClientWrapper graphClientWrapper;
-	
+	@Autowired
+	private SessionManagementHelper sessionManagementHelper;
 	@PostMapping("")
 	public ResponseEntity createMeeting(HttpServletRequest request, HttpServletResponse response, @RequestBody OnlineMeetingModel onlineMeetingModel){
 		ResponseEntity resEntity;
 		try {
-			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request, microsoft.getReqScopes(MicrosoftScopes.Meeting.Create.values()));
+//			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request, microsoft.getReqScopes(MicrosoftScopes.Meeting.Create.values()));
+			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getAuthSessionObject(request);
 			
 			OnlineMeeting meeting = new OnlineMeeting();
 			meeting.subject = onlineMeetingModel.getSubject();
@@ -65,8 +68,9 @@ public class MeetingController {
 	public ResponseEntity deleteMeeting(HttpServletRequest request, HttpServletResponse response, @RequestParam String meetingId){
 		ResponseEntity resEntity;
 		try {
-			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request, microsoft.getReqScopes(MicrosoftScopes.Meeting.Delete.values()));
-						
+//			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request, microsoft.getReqScopes(MicrosoftScopes.Meeting.Delete.values()));
+			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getAuthSessionObject(request);			
+			
 			HeaderOption option = new HeaderOption("Authorization", "Bearer " + result.accessToken());
 			
 			graphClientWrapper.getGraphServiceClient().me().onlineMeetings(meetingId).buildRequest(Arrays.asList(option)).delete();			

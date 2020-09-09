@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.libsys.onlinemeeting.config.HelperMethods;
+import com.libsys.onlinemeeting.config.SessionManagementHelper;
 import com.libsys.onlinemeeting.config.constant.Constants;
 import com.libsys.onlinemeeting.config.vendor.microsoft.GraphServiceClientWrapper;
 import com.libsys.onlinemeeting.config.vendor.microsoft.Microsoft;
@@ -38,14 +39,18 @@ public class UserController {
 	private HelperMethods helper;
 	@Autowired
 	private GraphServiceClientWrapper graphClientWrapper;
+	@Autowired
+	private SessionManagementHelper sessionManagementHelper;
 
 	@PostMapping("")
 	public ResponseEntity createUser(HttpServletRequest request, HttpServletResponse response,
 			@RequestBody UserModel userModel) {
 		ResponseEntity resEntity;
 		try {
-			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request,
-					microsoft.getReqScopes(MicrosoftScopes.User.Create.values()));
+//			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request,
+//					microsoft.getReqScopes(MicrosoftScopes.User.Create.values()));
+			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getAuthSessionObject(request);
+			
 			User user = new User();
 			user.accountEnabled = true;
 			user.displayName = userModel.getDisplayName();
@@ -79,9 +84,10 @@ public class UserController {
 			@RequestParam String userId) {
 		ResponseEntity<String> resEntity;
 		try {
-			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request,
-					microsoft.getReqScopes(MicrosoftScopes.User.Delete.values()));
-
+//			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request,
+//					microsoft.getReqScopes(MicrosoftScopes.User.Delete.values()));
+			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getAuthSessionObject(request);
+			
 			HeaderOption option = new HeaderOption("Authorization", "Bearer " + result.accessToken());
 			graphClientWrapper.getGraphServiceClient().users(userId).buildRequest(Arrays.asList(option)).delete();
 			resEntity = new ResponseEntity<String>(HttpStatus.NO_CONTENT);
@@ -98,9 +104,10 @@ public class UserController {
 			@RequestParam String roleId, @RequestParam String assignerId, @RequestParam String assignedToId) {
 		ResponseEntity<String> resEntity;
 		try {
-			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request,
-					microsoft.getReqScopes(MicrosoftScopes.User.AddRole.values()));
-
+//			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request,
+//					microsoft.getReqScopes(MicrosoftScopes.User.AddRole.values()));
+			
+			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getAuthSessionObject(request);
 			AppRoleAssignment roleAssignment = new AppRoleAssignment();
 			roleAssignment.principalId = UUID.fromString(assignedToId);
 			roleAssignment.resourceId = UUID.fromString(assignerId);
