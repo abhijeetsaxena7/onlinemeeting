@@ -238,7 +238,7 @@ public class Microsoft implements Vendor {
 
 	@Override
 	public void acquireTokenFromRefreshToken(HttpServletRequest httpRequest) throws Throwable {
-		IAuthenticationResult authResult = getAuthResultBySilentFlow(httpRequest, new HashSet<String>());
+		IAuthenticationResult authResult = getAuthResultBySilentFlow(httpRequest, getAllScopes());
 		sessionManagementHelper.setSessionPrincipal(httpRequest, authResult);
 	}
 
