@@ -13,7 +13,9 @@ public class UserModel implements Serializable {
 	private String department;
 	private String mailNickname;
 	private String[] roles;
-	
+	private String firstName;
+	private String lastName;
+		
 	public UserModel() {
 	}
 	public String getDefaultPassword() {
@@ -63,6 +65,18 @@ public class UserModel implements Serializable {
 	}
 	public void setRoles(String[] roles) {
 		this.roles = roles;
+	}
+	public String getFirstName() {
+		return firstName;
+	}
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+	public String getLastName() {
+		return lastName;
+	}
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 	
 	

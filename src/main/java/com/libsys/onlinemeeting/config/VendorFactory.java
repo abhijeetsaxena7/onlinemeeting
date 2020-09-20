@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import com.libsys.onlinemeeting.config.constant.Constants;
 import com.libsys.onlinemeeting.config.vendor.microsoft.Microsoft;
 import com.libsys.onlinemeeting.config.vendor.webex.Webex;
+import com.libsys.onlinemeeting.config.vendor.zoom.Zoom;
 
 /**
  * 
@@ -17,11 +18,13 @@ public class VendorFactory {
 	
 	private Microsoft microsoft;
 	private Webex webex;
+	private Zoom zoom;
 	
 	@Autowired
-	public VendorFactory(Microsoft microsoft, Webex webex) {
+	public VendorFactory(Microsoft microsoft, Webex webex, Zoom zoom) {
 		this.microsoft = microsoft;
 		this.webex = webex;
+		this.zoom = zoom;
 	}
 	
 	public Vendor getInstance(int id) {
@@ -30,7 +33,11 @@ public class VendorFactory {
 		}
 		
 		if(id == Constants.Vendors.Webex.getId()) {
-			return microsoft;
+			return webex;
+		}
+		
+		if(id == Constants.Vendors.Zoom.getId()) {
+			return zoom;
 		}
 		
 		throw new RuntimeException("Invalid Vendor value");

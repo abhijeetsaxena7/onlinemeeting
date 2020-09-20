@@ -9,6 +9,10 @@ public class OnlineMeetingModel implements Serializable{
 	private Calendar startDatetime;
 	private Calendar endDatetime;
 	private String joinWebUrl;
+	//zoom related fields
+	private String password;
+	private String startUrl;
+	private String description;
 	
 	public OnlineMeetingModel() {
 	}
@@ -53,6 +57,28 @@ public class OnlineMeetingModel implements Serializable{
 		this.joinWebUrl = joinWebUrl;
 	}
 
-	
-	
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getStartUrl() {
+		return startUrl;
+	}
+
+	public void setStartUrl(String startUrl) {
+		this.startUrl = startUrl;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 }

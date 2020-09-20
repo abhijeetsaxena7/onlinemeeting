@@ -1,6 +1,9 @@
 package com.libsys.onlinemeeting.config;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -49,6 +52,8 @@ public class HelperMethods {
 			vendor = Vendors.Microsoft;
 		}else if(path.contains("/"+Vendors.Webex.getPath()+"/") || path.contains("/webexapis.com/")) {
 			vendor = Vendors.Webex;
+		}else if(path.contains("/"+Vendors.Zoom.getPath()+"/") || path.contains("/zoom.us/")) {
+			vendor = Vendors.Zoom;
 		}
 		
 		if(vendor==null) {
@@ -64,7 +69,15 @@ public class HelperMethods {
 	 * @return encoded url
 	 */
 	public String getUri(String url, MultiValueMap<String, String> queryParams) {
-		return UriComponentsBuilder.fromHttpUrl(url).queryParams(queryParams).build().encode().toString();
+		return getUri(url, queryParams, true);
+	}
+	
+	public String getUri(String url, MultiValueMap<String, String> queryParams,boolean encode) {
+		return UriComponentsBuilder.fromHttpUrl(url).queryParams(queryParams).build(encode).toString();
+	}
+	
+	public String encodeUrl(String url) throws UnsupportedEncodingException {
+		return URLEncoder.encode(url,StandardCharsets.UTF_8.toString());
 	}
 
 }

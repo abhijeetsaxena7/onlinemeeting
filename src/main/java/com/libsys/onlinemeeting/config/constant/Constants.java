@@ -4,6 +4,7 @@ public interface Constants {
 	
 	public interface HeaderValue{
 		String APPLICATION_X_WWW_FORM_ENCODED = "application/x-www-form-url-encoded";
+		String APPLICATION_JSON = "application/json";
 	}
 	
 	public interface QueryParams{
@@ -30,7 +31,7 @@ public interface Constants {
 	
 	public enum Vendors {
 
-		Microsoft(1, "microsoft"), Webex(2, "webex");
+		Microsoft(1, "microsoft"), Webex(2, "webex"), Zoom(3,"zoom");
 
 		int id;
 		String path;
@@ -52,5 +53,6 @@ public interface Constants {
 	interface VendorPath{
 		String MICROSOFT = "/microsoft";
 		String WEBEX = "/webex";
+		String ZOOM = "/zoom";
 	}
 }
