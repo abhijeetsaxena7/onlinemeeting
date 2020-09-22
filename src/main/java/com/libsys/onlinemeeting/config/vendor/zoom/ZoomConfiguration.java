@@ -12,7 +12,7 @@ public class ZoomConfiguration {
 	private String redirectResponseUri;
 	private String authUrl; //https://zoom.us/oauth/authorize
 	private String tokenUrl;	//https://zoom.us/oauth/access_token
-	private String eventResponseUrl;
+	private String attendanceResponseUrl;
 	
 	public String getClientId() {
 		return clientId;
@@ -50,10 +50,10 @@ public class ZoomConfiguration {
 	public void setTokenUrl(String tokenUrl) {
 		this.tokenUrl = tokenUrl;
 	}
-	public String getEventResponseUrl() {
-		return eventResponseUrl;
+	public String getAttendanceResponseUrl() {
+		return attendanceResponseUrl;
 	}
-	public void setEventResponseUrl(String eventResponseUrl) {
-		this.eventResponseUrl = eventResponseUrl;
+	public void setAttendanceResponseUrl(String attendanceResponseUrl) {
+		this.attendanceResponseUrl = attendanceResponseUrl;
 	}
 }

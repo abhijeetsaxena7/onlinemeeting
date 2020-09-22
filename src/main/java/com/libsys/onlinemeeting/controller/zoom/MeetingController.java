@@ -2,10 +2,18 @@ package com.libsys.onlinemeeting.controller.zoom;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,7 +50,10 @@ import com.libsys.onlinemeeting.model.EventModel;
 import com.libsys.onlinemeeting.model.MeetingEventModel;
 import com.libsys.onlinemeeting.model.OnlineMeetingModel;
 import com.libsys.onlinemeeting.model.ParticipantEventModel;
+import com.libsys.onlinemeeting.model.ParticipantInfoModel;
 import com.libsys.onlinemeeting.model.UserModel;
+import com.libsys.onlinemeeting.service.zoom.MeetingService;
+import com.libsys.onlinemeeting.service.zoom.entity.ParticipantTbl;
 
 @RestController("Zoom_MeetingController")
 @RequestMapping(Constants.VendorPath.ZOOM + "/meeting")
@@ -50,6 +61,8 @@ public class MeetingController {
 
 	@Autowired
 	private ZoomConfiguration zoomConfiguration;
+	@Autowired
+	private MeetingService meetingService;
 
 	@PostMapping("")
 	public ResponseEntity createMeeting(HttpServletRequest request,
@@ -140,56 +153,92 @@ public class MeetingController {
 		return resEntity;
 	}
 	
+	//for zoom to recieve notification for pariticipant	
 	@PostMapping("/event/participant")
 	public ResponseEntity getEvent(@RequestBody ParticipantEvent event) {
-		ExecutorService executor = Executors.newFixedThreadPool(1);
-		executor.execute(()->{
-			sendParticipantEventToApi(event);
-		});
-		return new ResponseEntity(HttpStatus.OK);
+		try {
+			meetingService.persistParticipantDetails(event);
+			return new ResponseEntity(HttpStatus.OK);
+		}catch (Throwable e) {
+			 e.printStackTrace();
+			 return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 	
-	public void sendParticipantEventToApi(ParticipantEvent event){
-		RestTemplate restTemplate = new RestTemplate();
-		
-		ParticipantEventModel peModel = new ParticipantEventModel();
-		peModel.setMeetingId(event.getPayload().getId());
-		peModel.setUserId(event.getPayload().getParticipant().getId());
-		peModel.setJoinTime(event.getPayload().getParticipant().getJoinTime());
-		peModel.setLeaveTime(event.getPayload().getParticipant().getLeaveTime());
-		EventModel eventModel = new EventModel();
-		eventModel.setEventType(event.getEvent());
-		eventModel.setData(peModel);
-		
-		HttpEntity entity = new HttpEntity(eventModel);
-		restTemplate.exchange(zoomConfiguration.getEventResponseUrl(), HttpMethod.POST, entity, String.class);
-	}
-	
-
+	//for zoom to recieve meeting notification
 	@PostMapping("/event/meeting")
 	public ResponseEntity getEvent(@RequestBody MeetingEvent event) {
-		ExecutorService executor = Executors.newFixedThreadPool(1);
-		executor.execute(()->{
-			sendMeetingEventToApi(event);
-		});
-		return new ResponseEntity(HttpStatus.OK);
-	}
-
-	private void sendMeetingEventToApi(MeetingEvent event) {
+		
+		List<ParticipantTbl> participants = meetingService.getParticipantsInfoForMeeting(event.getPayload().getMeeting().getId());
+		
+		Map<String,List<ParticipantTbl>> participantMap = participants.stream().filter(e->e.getUserId()!=null).collect(Collectors.groupingBy(ParticipantTbl::getUserId));
+		
+		List<ParticipantInfoModel> piModels = new ArrayList<ParticipantInfoModel>();
+		
+		for(Entry<String, List<ParticipantTbl>>entry:participantMap.entrySet()) {
+			ParticipantInfoModel piModel = new ParticipantInfoModel();
+			piModel.setMeetingId(event.getPayload().getMeeting().getId());
+			piModel.setUserId(entry.getKey());
+			piModel.setAttendanceDuration(0);
+						
+			List<ParticipantTbl> sortedDates = entry.getValue().stream().sorted((o1,o2)->{
+				if(o1.getJoinTime()!=null && o2.getJoinTime()!=null) {
+					return o1.getJoinTime().compareTo(o2.getJoinTime());
+				}
+				
+				if(o1.getJoinTime()!=null && o2.getJoinTime()==null) {
+					return o1.getJoinTime().compareTo(o2.getLeaveTime());
+				}
+				if(o1.getJoinTime()==null && o2.getJoinTime()!=null) {
+					return o1.getLeaveTime().compareTo(o2.getJoinTime());
+				}
+				
+				return o1.getLeaveTime().compareTo(o2.getLeaveTime());
+			}).collect(Collectors.toList());
+			
+			long totalDuration = 0;
+			Date leave;
+			Date join;
+			if(sortedDates.size()<=1) {
+				
+			}else {
+				int len = sortedDates.size();
+				if(len%2!=0) {
+					if(sortedDates.get(len-1).getJoinTime()!=null) {
+						piModel.setRemainder(sortedDates.get(len-1).getJoinTime());
+					}else {
+						piModel.setRemainder(sortedDates.get(len-1).getLeaveTime());
+					}
+					len = len-1;
+				}
+				for(int i=0;i<len-1;i=i+2) {
+					if(sortedDates.get(i).getJoinTime()==null) {
+						join = sortedDates.get(i).getLeaveTime();
+					}else {
+						join = sortedDates.get(i).getJoinTime();
+					}
+					
+					if(sortedDates.get(i+1).getJoinTime()==null) {
+						leave = sortedDates.get(i+1).getLeaveTime();
+					}else {
+						leave = sortedDates.get(i+1).getJoinTime();
+					}
+					
+					totalDuration += leave.getTime() - join.getTime();
+				}
+				piModel.setAttendanceDuration(totalDuration);
+			}
+			
+			piModels.add(piModel);
+		}
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.CONTENT_TYPE, Constants.HeaderValue.APPLICATION_JSON);
+		
+		HttpEntity entity = new HttpEntity(piModels, headers);
 		RestTemplate restTemplate = new RestTemplate();
 		
-		MeetingEventModel meModel = new MeetingEventModel();
-		meModel.setMeetingId(event.getPayload().getMeeting().getId());
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(event.getPayload().getMeeting().getStartTime());
-		cal.add(event.getPayload().getMeeting().getDuration(), Calendar.MINUTE);
-		meModel.setEndTime(cal.getTime());
-		EventModel eventModel = new EventModel();
-		eventModel.setEventType(event.getEvent());
-		eventModel.setData(meModel);
-		
-		HttpEntity entity = new HttpEntity(meModel);
-		restTemplate.exchange(zoomConfiguration.getEventResponseUrl(), HttpMethod.POST, entity, String.class);
-		
-	}
+		ResponseEntity resEntity = restTemplate.exchange(zoomConfiguration.getAttendanceResponseUrl(), HttpMethod.POST, entity, String.class);
+		return new ResponseEntity(HttpStatus.OK);
+	}	
 }

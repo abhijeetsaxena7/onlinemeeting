@@ -21,6 +21,9 @@ dependencies {
     compile 'com.nimbusds:oauth2-oidc-sdk:6.5'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'	
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.21'
+		
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
