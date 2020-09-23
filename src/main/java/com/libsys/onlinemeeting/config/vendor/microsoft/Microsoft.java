@@ -128,6 +128,7 @@ public class Microsoft implements Vendor {
 		scopes.addAll(getAuthScopes(MicrosoftScopes.Group.DeleteOwner.values()));
 		scopes.addAll(getAuthScopes(MicrosoftScopes.Meeting.Create.values()));
 		scopes.addAll(getAuthScopes(MicrosoftScopes.Meeting.Delete.values()));
+		scopes.addAll(getAuthScopes(MicrosoftScopes.Event.Create.values()));
 		return scopes;
 	}
 

@@ -68,6 +68,11 @@ public interface MicrosoftScopes {
 		public enum Delete implements BaseScope {
 			OnlineMeetings_ReadWrite;
 		}
-
+	}
+	
+	interface Event{
+		public enum Create implements BaseScope{
+			Calendars_ReadWrite;
+		}
 	}
 }

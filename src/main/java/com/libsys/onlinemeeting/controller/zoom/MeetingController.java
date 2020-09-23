@@ -46,7 +46,6 @@ import com.libsys.onlinemeeting.config.vendor.zoom.sdk.MeetingSetting;
 import com.libsys.onlinemeeting.config.vendor.zoom.sdk.User;
 import com.libsys.onlinemeeting.config.vendor.zoom.sdk.UserCreate;
 import com.libsys.onlinemeeting.config.vendor.zoom.sdk.ZoomClient;
-import com.libsys.onlinemeeting.model.EventModel;
 import com.libsys.onlinemeeting.model.MeetingEventModel;
 import com.libsys.onlinemeeting.model.OnlineMeetingModel;
 import com.libsys.onlinemeeting.model.ParticipantEventModel;
