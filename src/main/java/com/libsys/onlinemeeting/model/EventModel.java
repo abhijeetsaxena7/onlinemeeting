@@ -14,6 +14,10 @@ public class EventModel implements Serializable{
 	private String onlineMeetingUrl;
 	private boolean setReminder;
 
+	//for LSAC to get info back
+	private Integer moduleType;
+	private Integer moduleSubType;
+	
 	public String getId() {
 		return id;
 	}
