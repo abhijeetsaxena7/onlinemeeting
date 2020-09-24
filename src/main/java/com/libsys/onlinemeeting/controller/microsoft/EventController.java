@@ -61,7 +61,7 @@ public class EventController {
 			
 			ItemBody body = new ItemBody();
 			body.contentType = eventModel.isHtml()?BodyType.HTML:BodyType.TEXT;
-			body.content = "Does noon work for you?";
+			body.content = eventModel.getBody();
 			event.body = body;
 			
 			DateTimeTimeZone start = new DateTimeTimeZone();
