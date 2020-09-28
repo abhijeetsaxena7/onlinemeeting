@@ -3,7 +3,7 @@ package com.libsys.onlinemeeting.config.constant;
 public interface Constants {
 	
 	public interface HeaderValue{
-		String APPLICATION_X_WWW_FORM_ENCODED = "application/x-www-form-url-encoded";
+		String APPLICATION_X_WWW_FORM_ENCODED = "application/x-www-form-urlencoded";
 		String APPLICATION_JSON = "application/json";
 	}
 	
@@ -11,7 +11,7 @@ public interface Constants {
 		String GRANT_TYPE = "grant_type";
 		String RESPONSE_TYPE = "response_type";
 		String CLIENT_ID = "client_id";
-		String CLIENT_SECRET = "";
+		String CLIENT_SECRET = "client_secret";
 		String STATE = "state";
 		String SCOPE = "scope";
 		String AUTH_CODE = "code";

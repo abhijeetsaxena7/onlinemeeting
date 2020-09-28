@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.libsys.onlinemeeting.config.constant.Constants;
-import com.libsys.onlinemeeting.config.vendor.zoom.AccessToken;
+import com.libsys.onlinemeeting.config.vendor.zoom.Zoom;
 import com.libsys.onlinemeeting.config.vendor.zoom.ZoomConfiguration;
 import com.libsys.onlinemeeting.config.vendor.zoom.sdk.Meeting;
 import com.libsys.onlinemeeting.config.vendor.zoom.sdk.MeetingSetting;
@@ -24,11 +24,18 @@ import com.libsys.onlinemeeting.config.vendor.zoom.sdk.ZoomClient;
 public class AuthController {
 	@Autowired
 	ZoomConfiguration zoomConfig;
-
+	@Autowired
+	Zoom zoom;
+	
+	/**
+	 * Find user details and redirect the response to reponseUrl.
+	 * @param request
+	 * @param response
+	 */
 	@GetMapping("/redirectUri")
 	public void sendRedirectResponse(HttpServletRequest request, HttpServletResponse response) {
 
-		String accessToken = ((AccessToken) request.getSession().getAttribute("principal")).getAccessToken();
+		String accessToken = zoom.getAccessTokenValueFromSession(request);
 		ZoomClient zoomClient = ZoomClient.builder(accessToken).build();
 		User user = zoomClient.user().get();
 		try {

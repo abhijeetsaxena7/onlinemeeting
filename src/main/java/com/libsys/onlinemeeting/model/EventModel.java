@@ -72,4 +72,16 @@ public class EventModel implements Serializable{
 	public void setSetReminder(boolean setReminder) {
 		this.setReminder = setReminder;
 	}
+	public Integer getModuleType() {
+		return moduleType;
+	}
+	public void setModuleType(Integer moduleType) {
+		this.moduleType = moduleType;
+	}
+	public Integer getModuleSubType() {
+		return moduleSubType;
+	}
+	public void setModuleSubType(Integer moduleSubType) {
+		this.moduleSubType = moduleSubType;
+	}
 }

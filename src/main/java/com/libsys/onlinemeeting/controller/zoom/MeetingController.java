@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.libsys.onlinemeeting.config.constant.Constants;
-import com.libsys.onlinemeeting.config.vendor.zoom.AccessToken;
+import com.libsys.onlinemeeting.config.vendor.zoom.Zoom;
 import com.libsys.onlinemeeting.config.vendor.zoom.ZoomConfiguration;
 import com.libsys.onlinemeeting.config.vendor.zoom.ZoomConstants;
 import com.libsys.onlinemeeting.config.vendor.zoom.sdk.ParticipantEvent;
@@ -54,6 +54,11 @@ import com.libsys.onlinemeeting.model.UserModel;
 import com.libsys.onlinemeeting.service.zoom.MeetingService;
 import com.libsys.onlinemeeting.service.zoom.entity.ParticipantTbl;
 
+/**
+ * Contains operatins related to meeting.
+ * @author Abhijeet Saxena
+ *
+ */
 @RestController("Zoom_MeetingController")
 @RequestMapping(Constants.VendorPath.ZOOM + "/meeting")
 public class MeetingController {
@@ -62,14 +67,26 @@ public class MeetingController {
 	private ZoomConfiguration zoomConfiguration;
 	@Autowired
 	private MeetingService meetingService;
-
+	@Autowired
+	private Zoom zoom;
+	
+	/**
+	 * Create a meeting in zoom.
+	 * Get Access Token from session.
+	 * Set details in meetingObject.
+	 * Inilitialize zoomClient and call api.
+	 * Set meeting urls in online meeting model.
+	 * @param request
+	 * @param onlineMeetingModel
+	 * @return HttpStatus201 and onlinemeetingmodel, on failure httpstatus500 and error msg
+	 */
 	@PostMapping("")
 	public ResponseEntity createMeeting(HttpServletRequest request,
 			@RequestBody OnlineMeetingModel onlineMeetingModel) {
 		ResponseEntity resEntity;
 		try {
-			String accessToken = ((AccessToken) request.getSession().getAttribute("principal")).getAccessToken();
-
+			String accessToken = zoom.getAccessTokenValueFromSession(request);
+			
 			Meeting meeting = new Meeting();
 			meeting.setPassword(onlineMeetingModel.getPassword());
 			meeting.setStartTime(onlineMeetingModel.getStartDatetime().getTime());
@@ -94,13 +111,22 @@ public class MeetingController {
 		return resEntity;
 	}
 	
+	/**
+	 * Update meeting in zoom.
+	 * Get Access Token from session.
+	 * Set details in meetingObject.
+	 * Inilitialize zoomClient and call api.
+	 * Set meeting urls in online meeting model.
+	 * @param request
+	 * @param onlineMeetingModel
+	 * @return HttpStatus204 , on failure httpstatus500 and error msg
+	 */
 	@PatchMapping("")
 	public ResponseEntity updateMeeting(HttpServletRequest request,
 			@RequestBody OnlineMeetingModel onlineMeetingModel) {
 		ResponseEntity resEntity;
 		try {
-			String accessToken = ((AccessToken) request.getSession().getAttribute("principal")).getAccessToken();
-
+			String accessToken = zoom.getAccessTokenValueFromSession(request);
 			Meeting meeting = new Meeting();
 			if(onlineMeetingModel.getPassword()!=null) {
 			meeting.setPassword(onlineMeetingModel.getPassword());
@@ -136,11 +162,18 @@ public class MeetingController {
 		return resEntity;
 	}
 	
+	/**
+	 * Delete meeting from zoom for the given meetingId.
+	 * 
+	 * @param request
+	 * @param meetingId
+	 * @return HttpStatus 204 on success, httpstatus 500 on failure
+	 */
 	@DeleteMapping("")
 	public ResponseEntity deleteMeeting(HttpServletRequest request,@RequestParam String meetingId) {
 		ResponseEntity resEntity;
 		try {
-			String accessToken = ((AccessToken) request.getSession().getAttribute("principal")).getAccessToken();
+			String accessToken = zoom.getAccessTokenValueFromSession(request);
 			ZoomClient zoomClient = ZoomClient.builder(accessToken).build();
 			
 			zoomClient.meeting().path(meetingId).delete();
@@ -152,7 +185,13 @@ public class MeetingController {
 		return resEntity;
 	}
 	
-	//for zoom to recieve notification for pariticipant	
+	//for zoom to recieve notification for pariticipant
+	/**
+	 * This api receives data when a participant joins or leaves a meeting.
+	 * We persist the join time or leave time based on that information.
+	 * @param event
+	 * @return
+	 */
 	@PostMapping("/event/participant")
 	public ResponseEntity getEvent(@RequestBody ParticipantEvent event) {
 		try {
@@ -165,11 +204,17 @@ public class MeetingController {
 	}
 	
 	//for zoom to recieve meeting notification
+	/**
+	 * This api recieves notification from zoom when a meeting ends.
+	 * We compute attendance from persisted information for the participant
+	 * @param event
+	 * @return
+	 */
 	@PostMapping("/event/meeting")
 	public ResponseEntity getEvent(@RequestBody MeetingEvent event) {
 		
 		List<ParticipantTbl> participants = meetingService.getParticipantsInfoForMeeting(event.getPayload().getMeeting().getId());
-		
+		//create map of participant details based on user emailId.
 		Map<String,List<ParticipantTbl>> participantMap = participants.stream().filter(e->e.getUserId()!=null).collect(Collectors.groupingBy(ParticipantTbl::getUserId));
 		
 		List<ParticipantInfoModel> piModels = new ArrayList<ParticipantInfoModel>();
@@ -179,7 +224,7 @@ public class MeetingController {
 			piModel.setMeetingId(event.getPayload().getMeeting().getId());
 			piModel.setUserId(entry.getKey());
 			piModel.setAttendanceDuration(0);
-						
+			//sort on basis of date time
 			List<ParticipantTbl> sortedDates = entry.getValue().stream().sorted((o1,o2)->{
 				if(o1.getJoinTime()!=null && o2.getJoinTime()!=null) {
 					return o1.getJoinTime().compareTo(o2.getJoinTime());
@@ -194,7 +239,7 @@ public class MeetingController {
 				
 				return o1.getLeaveTime().compareTo(o2.getLeaveTime());
 			}).collect(Collectors.toList());
-			
+			//compute pair wise difference is join time and leave time. Once done add to total duration
 			long totalDuration = 0;
 			Date leave;
 			Date join;
@@ -231,6 +276,7 @@ public class MeetingController {
 			piModels.add(piModel);
 		}
 		
+		//send requet to rsponse url for attendance report.
 		HttpHeaders headers = new HttpHeaders();
 		headers.add(HttpHeaders.CONTENT_TYPE, Constants.HeaderValue.APPLICATION_JSON);
 		

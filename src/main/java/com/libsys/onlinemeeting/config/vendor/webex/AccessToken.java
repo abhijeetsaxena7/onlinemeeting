@@ -2,7 +2,7 @@ package com.libsys.onlinemeeting.config.vendor.webex;
 
 import java.io.Serializable;
 
-public class AccessToken implements Serializable{	
+class AccessToken implements Serializable{	
 	private String accessToken;
 	private String refreshToken;	
 	private long expiresIn;
