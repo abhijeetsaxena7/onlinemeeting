@@ -2,6 +2,11 @@ package com.libsys.onlinemeeting.config.vendor.webex;
 
 import java.io.Serializable;
 
+/**
+ * Class to store authentication details for a user.
+ * @author Abhijeet Saxena
+ *
+ */
 class AccessToken implements Serializable{	
 	private String accessToken;
 	private String refreshToken;	

@@ -67,8 +67,9 @@ public class UserController {
 		try {
 //			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request,
 //					microsoft.getReqScopes(MicrosoftScopes.User.Create.values()));
-			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getAuthSessionObject(request);
-			
+//			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getSessionPrincipal(request);
+			String accessToken = microsoft.getAccessTokenFromSession(request);
+
 			User user = new User();
 			user.accountEnabled = true;
 			user.displayName = userModel.getDisplayName();
@@ -81,7 +82,7 @@ public class UserController {
 			user.department = userModel.getDepartment();
 			user.birthday = userModel.getDob();
 
-			HeaderOption option = new HeaderOption("Authorization", "Bearer " + result.accessToken());
+			HeaderOption option = new HeaderOption("Authorization", "Bearer " + accessToken);
 			IUserCollectionRequest userReq = graphClientWrapper.getGraphServiceClient().users()
 					.buildRequest(Arrays.asList(option));
 
@@ -116,9 +117,10 @@ public class UserController {
 		try {
 //			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request,
 //					microsoft.getReqScopes(MicrosoftScopes.User.Delete.values()));
-			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getAuthSessionObject(request);
-			
-			HeaderOption option = new HeaderOption("Authorization", "Bearer " + result.accessToken());
+//			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getSessionPrincipal(request);
+			String accessToken = microsoft.getAccessTokenFromSession(request);
+
+			HeaderOption option = new HeaderOption("Authorization", "Bearer " + accessToken);
 			graphClientWrapper.getGraphServiceClient().users(userId).buildRequest(Arrays.asList(option)).delete();
 			resEntity = new ResponseEntity<String>(HttpStatus.NO_CONTENT);
 		} catch (Throwable e) {
@@ -151,13 +153,15 @@ public class UserController {
 //			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request,
 //					microsoft.getReqScopes(MicrosoftScopes.User.AddRole.values()));
 			
-			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getAuthSessionObject(request);
+//			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getSessionPrincipal(request);
+			String accessToken = microsoft.getAccessTokenFromSession(request);
+			
 			AppRoleAssignment roleAssignment = new AppRoleAssignment();
 			roleAssignment.principalId = UUID.fromString(assignedToId);
 			roleAssignment.resourceId = UUID.fromString(assignerId);
 			roleAssignment.appRoleId = UUID.fromString(roleId);
 
-			HeaderOption option = new HeaderOption("Authorization", "Bearer " + result.accessToken());
+			HeaderOption option = new HeaderOption("Authorization", "Bearer " + accessToken);
 			graphClientWrapper.getGraphServiceClient().users(assignedToId).buildRequest(Arrays.asList(option)).delete();
 			resEntity = new ResponseEntity<String>(HttpStatus.NO_CONTENT);
 		} catch (Throwable e) {

@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.libsys.onlinemeeting.config.SessionManagementHelper;
+import com.libsys.onlinemeeting.config.auth.AuthObjectHandler;
 import com.libsys.onlinemeeting.config.constant.Constants;
+import com.libsys.onlinemeeting.config.constant.Constants.Session;
 import com.libsys.onlinemeeting.config.vendor.webex.Webex;
 import com.libsys.onlinemeeting.config.vendor.webex.WebexConfiguration;
 import com.libsys.onlinemeeting.config.vendor.webex.sdk.Person;
@@ -22,7 +25,6 @@ public class AuthController {
 
 	private WebexConfiguration webexConfig;
 	private Webex webex;
-	
 	@Autowired
 	public AuthController(WebexConfiguration webexConfig, Webex webex) {
 		this.webexConfig = webexConfig;
@@ -38,7 +40,7 @@ public class AuthController {
 	@GetMapping("/redirectUri")
 	public void sendRedirectResponse(HttpServletRequest request, HttpServletResponse response) {
 		String accessToken = webex.getAccessTokenValueFromSession(request);
-		
+		webex.storeAccessTokenInDb(request);
 		Spark spark = Spark.builder().accessToken(accessToken).build();
 		Person person = spark.people().path("/me").get();
 		

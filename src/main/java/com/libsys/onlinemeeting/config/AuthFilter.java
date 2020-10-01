@@ -3,6 +3,8 @@ package com.libsys.onlinemeeting.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.net.HttpHeaders;
+import com.libsys.onlinemeeting.config.auth.AuthObjectHandler;
 import com.libsys.onlinemeeting.config.constant.Constants;
 
 import java.io.IOException;
@@ -29,6 +31,8 @@ public class AuthFilter implements Filter {
 	private HelperMethods helper;
 	@Autowired
 	private VendorFactory vendorFactory;
+	@Autowired
+	private AuthObjectHandler authHandler;
 
 	List<String> excludedUrls = new ArrayList<>();
 
@@ -38,7 +42,6 @@ public class AuthFilter implements Filter {
 		if (request instanceof HttpServletRequest) {
 			HttpServletRequest httpRequest = (HttpServletRequest) request;
 			HttpServletResponse httpResponse = (HttpServletResponse) response;
-
 			String path = httpRequest.getServletPath();
 			
 			//exclude paths from filter 
@@ -49,11 +52,11 @@ public class AuthFilter implements Filter {
 
 			try {
 				//get vendor id to obtain instance of vendor
-				if (!helper.hasVendor(httpRequest)) {
+//				if (!helper.hasVendor(httpRequest)) {
 					helper.setVendor(httpRequest, path);
-				}
+//				}
 				Vendor vendor = vendorFactory.getInstance(helper.getVendor(httpRequest));
-
+				
 				//do not change the order of checks
 				
 				//check if auth code exists in param, use it to obtain access token
@@ -67,8 +70,13 @@ public class AuthFilter implements Filter {
 					vendor.sendAuthRedirect(httpRequest, httpResponse);
 					return;
 				}
+				//if authorization value exists then, set auth object in session for faster fetching
+				if(httpRequest.getHeader(HttpHeaders.AUTHORIZATION)!=null) {
+					String authObject = authHandler.getAuthObject(httpRequest);
+					vendor.deserializeAndSetInSession(authObject,httpRequest);
+				}
 				//if access token expired, then obtain new token using refresh token.
-				if(vendor.isAccessTokenExpired(httpRequest)) {
+				if(vendor.isAccessTokenExpired(httpRequest) || true) {
 					vendor.acquireTokenFromRefreshToken(httpRequest);
 					chain.doFilter(request, response);
 					return;

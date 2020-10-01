@@ -12,6 +12,8 @@ public class MicrosoftConfiguration {
 	private String redirectResponseUri;
 	private String authority;
 	private String graphEndpointHost;	
+	private String authEndpoint;
+	private String tokenEndpoint;	
 	
 	
 	public String getAuthority() {
@@ -53,4 +55,18 @@ public class MicrosoftConfiguration {
 	public void setGraphEndpointHost(String graphEndpointHost) {
 		this.graphEndpointHost = graphEndpointHost;
 	}
+	public String getAuthEndpoint() {
+		return authEndpoint;
+	}
+	public void setAuthEndpoint(String authEndpoint) {
+		this.authEndpoint = authEndpoint;
+	}
+	public String getTokenEndpoint() {
+		return tokenEndpoint;
+	}
+	public void setTokenEndpoint(String tokenEndpoint) {
+		this.tokenEndpoint = tokenEndpoint;
+	}
+	
+	
 }

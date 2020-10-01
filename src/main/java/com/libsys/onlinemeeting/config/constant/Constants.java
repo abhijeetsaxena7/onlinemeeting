@@ -26,7 +26,8 @@ public interface Constants {
 		String PRINCIPAL_SESSION_NAME = "principal";
 		String TOKEN_CACHE = "token_cache";
 		 String STATES = "states";
-		 Integer STATE_TTL = 3600;    
+		 Integer STATE_TTL = 3600;
+		String AUTH_OBJECT = "auth_object";    
 	}
 	
 	public enum Vendors {
@@ -54,5 +55,16 @@ public interface Constants {
 		String MICROSOFT = "/microsoft";
 		String WEBEX = "/webex";
 		String ZOOM = "/zoom";
+	}
+	
+	interface Roles{
+		interface Microsoft{
+			String USER_ADMIN = "fe930be7-5e62-47db-91af-98c3a49a38b1";
+			String GLOBAL_ADMIN="62e90394-69f5-4237-9190-012177145e10";
+		}
+		interface Webex{
+			String USER_ADMIN = "";
+			String GLOBAL_ADMIN = "";
+		}
 	}
 }

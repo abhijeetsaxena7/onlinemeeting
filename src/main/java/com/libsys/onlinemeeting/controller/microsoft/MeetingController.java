@@ -62,14 +62,15 @@ public class MeetingController {
 		ResponseEntity resEntity;
 		try {
 //			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request, microsoft.getReqScopes(MicrosoftScopes.Meeting.Create.values()));
-			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getAuthSessionObject(request);
-			
+//			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getSessionPrincipal(request);
+			String accessToken = microsoft.getAccessTokenFromSession(request);
+
 			OnlineMeeting meeting = new OnlineMeeting();
 			meeting.subject = onlineMeetingModel.getSubject();
 			meeting.startDateTime = onlineMeetingModel.getStartDatetime();
 			meeting.endDateTime = onlineMeetingModel.getEndDatetime();
 			
-			HeaderOption option = new HeaderOption("Authorization", "Bearer " + result.accessToken());
+			HeaderOption option = new HeaderOption("Authorization", "Bearer " + accessToken);
 			
 			IOnlineMeetingCollectionRequest req = graphClientWrapper.getGraphServiceClient().me().onlineMeetings().buildRequest(Arrays.asList(option));
 			OnlineMeeting res = req.post(meeting);		
@@ -96,9 +97,10 @@ public class MeetingController {
 		ResponseEntity resEntity;
 		try {
 //			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request, microsoft.getReqScopes(MicrosoftScopes.Meeting.Delete.values()));
-			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getAuthSessionObject(request);			
-			
-			HeaderOption option = new HeaderOption("Authorization", "Bearer " + result.accessToken());
+//			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getSessionPrincipal(request);			
+			String accessToken = microsoft.getAccessTokenFromSession(request);
+
+			HeaderOption option = new HeaderOption("Authorization", "Bearer " + accessToken);
 			
 			graphClientWrapper.getGraphServiceClient().me().onlineMeetings(meetingId).buildRequest(Arrays.asList(option)).delete();			
 			resEntity = new ResponseEntity<>(HttpStatus.NO_CONTENT);

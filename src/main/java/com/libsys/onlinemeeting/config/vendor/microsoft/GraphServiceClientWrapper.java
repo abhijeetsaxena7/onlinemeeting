@@ -6,6 +6,11 @@ import com.microsoft.graph.http.IHttpRequest;
 import com.microsoft.graph.models.extensions.IGraphServiceClient;
 import com.microsoft.graph.requests.extensions.GraphServiceClient;
 
+/**
+ * Wrapper class to return instance of graphServiceClient
+ * @author Abhijeet Saxena
+ *
+ */
 @Component
 public class GraphServiceClientWrapper implements IAuthenticationProvider{
 	private IGraphServiceClient graphServiceClient;

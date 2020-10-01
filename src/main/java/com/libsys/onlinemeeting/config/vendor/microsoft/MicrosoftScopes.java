@@ -3,6 +3,9 @@ package com.libsys.onlinemeeting.config.vendor.microsoft;
 public interface MicrosoftScopes {
 
 	String baseEndPoint = "https://graph.microsoft.com/";
+	String Profile = "profile";
+	String Offline = "offline_access";
+	String OpenId = "openid";
 
 	interface BaseScope {
 		public default String getAuthValue() {
@@ -13,7 +16,7 @@ public interface MicrosoftScopes {
 			return new StringBuilder(baseEndPoint).append(this.toString().replace("_", ".")).toString();
 		}
 
-	}
+	}	
 
 	interface User {
 		public enum Create implements BaseScope {

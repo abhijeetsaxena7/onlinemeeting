@@ -5,6 +5,8 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.libsys.onlinemeeting.config.constant.Constants;
+
 /**
  * 
  * @author Abhijeet Saxena 
@@ -24,4 +26,7 @@ public interface Vendor {
 	void processAuthCodeRedirect(HttpServletRequest httpRequest) throws Throwable;
 
 	void acquireTokenFromRefreshToken(HttpServletRequest httpRequest) throws Throwable;
+
+	void deserializeAndSetInSession(String authObject,HttpServletRequest httpRequest);
+	
 }

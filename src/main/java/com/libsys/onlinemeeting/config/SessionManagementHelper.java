@@ -125,7 +125,7 @@ public class SessionManagementHelper {
       * @param request
       * @return
       */
-    public Object getAuthSessionObject(HttpServletRequest request) {
+    public Object getSessionPrincipal(HttpServletRequest request) {
         Object principalSession = request.getSession().getAttribute(Constants.Session.PRINCIPAL_SESSION_NAME);
         if(principalSession==null){
         	throw new IllegalStateException("Session does not contain principal session name");
@@ -133,4 +133,13 @@ public class SessionManagementHelper {
         
         return principalSession;
     }
+
+	public Object getAuthObjectFromSession(HttpServletRequest request) {
+		Object authObject = request.getSession().getAttribute(Constants.Session.AUTH_OBJECT);
+		if(authObject==null){
+        	throw new IllegalStateException("Session does not contain auth object");
+        } 
+        
+        return authObject;
+	}
 }

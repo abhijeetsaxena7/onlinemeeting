@@ -32,6 +32,12 @@ import com.microsoft.graph.models.generated.BodyType;
 import com.microsoft.graph.models.generated.OnlineMeetingProviderType;
 import com.microsoft.graph.options.HeaderOption;
 
+/**
+ * Contains operations related to micrsoft events in calendar
+ * 
+ * @author Abhijeet Saxena
+ *
+ */
 @RestController("Microsoft_EventController")
 @RequestMapping(Constants.VendorPath.MICROSOFT + "/event")
 public class EventController {
@@ -44,11 +50,25 @@ public class EventController {
 	@Autowired
 	private SessionManagementHelper sessionManagementHelper;
 
+	/**
+	 * 
+	 * Create events with the given details. If online meeting parameter is
+	 * specified, then create an online meeting on the skype. 
+	 * Get IAuthenticationResult object from session. 
+	 * Set access token in header.
+	 * Build request and get response.
+	 * 
+	 * @param request
+	 * @param List<EventModel>
+	 * @return If success, HttpStatus 204 and List<EventModel>, else HttpStatus
+	 *         500 and error msg
+	 */
 	@PostMapping("")
 	public ResponseEntity createEvent(HttpServletRequest request, @RequestBody List<EventModel> eventModels) {
 		ResponseEntity resEntity;
-		IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getAuthSessionObject(request);
-		HeaderOption option = new HeaderOption("Authorization", "Bearer " + result.accessToken());
+//		IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getSessionPrincipal(request);
+		String accessToken = microsoft.getAccessTokenFromSession(request);
+		HeaderOption option = new HeaderOption("Authorization", "Bearer " + accessToken);
 
 		for (EventModel eventModel : eventModels) {
 			try {
@@ -94,17 +114,23 @@ public class EventController {
 				e.printStackTrace();
 			}
 		}
-		
 		resEntity = new ResponseEntity(eventModels,HttpStatus.CREATED);
 		return resEntity;
 	}
 
+	/**
+	 * Update event details. Only updates the details provided. 
+	 * @param request
+	 * @param eventModel
+	 * @return HttpStatus 201 and event model. On failure HttpStatus 500 and error message
+	 */
 	@PatchMapping("")
 	public ResponseEntity updateEvent(HttpServletRequest request, @RequestBody EventModel eventModel) {
 		ResponseEntity resEntity;
 		try {
-			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper
-					.getAuthSessionObject(request);
+//			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper
+//					.getSessionPrincipal(request);
+			String accessToken = microsoft.getAccessTokenFromSession(request);
 
 			Event event = new Event();
 			if (eventModel.getSubject() != null) {
@@ -145,7 +171,7 @@ public class EventController {
 				event.isReminderOn = true;
 			}
 
-			HeaderOption option = new HeaderOption("Authorization", "Bearer " + result.accessToken());
+			HeaderOption option = new HeaderOption("Authorization", "Bearer " + accessToken);
 			Event res = graphClientWrapper.getGraphServiceClient().me().events(eventModel.getId())
 					.buildRequest(Arrays.asList(option)).patch(event);
 
@@ -159,14 +185,21 @@ public class EventController {
 		return resEntity;
 	}
 
+	/**
+	 * Delete event based on the given eventId
+	 * @param request
+	 * @param eventId
+	 * @return
+	 */
 	@DeleteMapping("")
-	public ResponseEntity updateEvent(HttpServletRequest request, @RequestParam String eventId) {
+	public ResponseEntity deleteEvent(HttpServletRequest request, @RequestParam String eventId) {
 		ResponseEntity resEntity;
 		try {
-			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper
-					.getAuthSessionObject(request);
+//			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper
+//					.getSessionPrincipal(request);
+			String accessToken = microsoft.getAccessTokenFromSession(request);
 
-			HeaderOption option = new HeaderOption("Authorization", "Bearer " + result.accessToken());
+			HeaderOption option = new HeaderOption("Authorization", "Bearer " + accessToken);
 			graphClientWrapper.getGraphServiceClient().me().events(eventId).buildRequest(Arrays.asList(option))
 					.delete();
 			resEntity = new ResponseEntity(HttpStatus.NO_CONTENT);

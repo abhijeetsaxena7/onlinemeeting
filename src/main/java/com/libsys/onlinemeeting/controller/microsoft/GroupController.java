@@ -68,7 +68,9 @@ public class GroupController {
 		ResponseEntity resEntity;
 		try {
 //			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request, microsoft.getReqScopes(MicrosoftScopes.Group.Create.values()));			
-			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getAuthSessionObject(request);
+//			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getSessionPrincipal(request);
+			String accessToken = microsoft.getAccessTokenFromSession(request);
+
 			Group group = new Group();
 			group.displayName = groupModel.getDisplayName();
 			group.description = groupModel.getDescription();
@@ -79,7 +81,7 @@ public class GroupController {
 			group.groupTypes = groupTypeList;
 			group.securityEnabled=false;
 			
-			HeaderOption option = new HeaderOption("Authorization", "Bearer " + result.accessToken());			
+			HeaderOption option = new HeaderOption("Authorization", "Bearer " + accessToken);			
 			IGroupCollectionRequest groupReq = graphClientWrapper.getGraphServiceClient().groups().buildRequest(Arrays.asList(option));
 			Group res = groupReq.post(group);
 			groupModel.setObjectId(res.id);
@@ -107,9 +109,10 @@ public class GroupController {
 		ResponseEntity<String> resEntity;
 		try {
 //			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request, microsoft.getReqScopes(MicrosoftScopes.Group.Delete.values()));			
-			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getAuthSessionObject(request);
-			
-			HeaderOption option = new HeaderOption("Authorization", "Bearer " + result.accessToken());			
+//			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getSessionPrincipal(request);
+			String accessToken = microsoft.getAccessTokenFromSession(request);
+
+			HeaderOption option = new HeaderOption("Authorization", "Bearer " + accessToken);			
 			graphClientWrapper.getGraphServiceClient().groups(groupId).buildRequest(Arrays.asList(option)).delete();
 			resEntity = new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		} catch (Throwable e) {
@@ -136,12 +139,13 @@ public class GroupController {
 		ResponseEntity<String> resEntity;
 		try {
 //			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request, microsoft.getReqScopes(MicrosoftScopes.Group.AddOwner.values()));			
-			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getAuthSessionObject(request);
-			
+//			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getSessionPrincipal(request);
+			String accessToken = microsoft.getAccessTokenFromSession(request);
+
 			DirectoryObject userObject= new DirectoryObject();
 			userObject.id =userId;
 			
-			HeaderOption option = new HeaderOption("Authorization", "Bearer " + result.accessToken());			
+			HeaderOption option = new HeaderOption("Authorization", "Bearer " + accessToken);			
 			graphClientWrapper.getGraphServiceClient().groups(groupId).owners().references().buildRequest(Arrays.asList(option)).post(userObject);
 			resEntity = new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		} catch (Throwable e) {
@@ -167,8 +171,9 @@ public class GroupController {
 		ResponseEntity<String> resEntity;
 		try {
 //			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request, microsoft.getReqScopes(MicrosoftScopes.Group.AddMember.values()));
-			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getAuthSessionObject(request);
-			
+//			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getSessionPrincipal(request);
+			String accessToken = microsoft.getAccessTokenFromSession(request);
+
 			JsonArray members = new JsonArray();
 			for(String memberId:memberIds) {
 				members.add(msConfig.getGraphEndpointHost()+"v1.0/directoryObjects/"+memberId);
@@ -176,7 +181,7 @@ public class GroupController {
 			
 			Group group = new Group();
 			group.additionalDataManager().put("members@odata.bind", members);
-			HeaderOption option = new HeaderOption("Authorization", "Bearer " + result.accessToken());			
+			HeaderOption option = new HeaderOption("Authorization", "Bearer " + accessToken);			
 			graphClientWrapper.getGraphServiceClient().groups(groupId).buildRequest(Arrays.asList(option)).patch(group);
 			resEntity = new ResponseEntity<String>(HttpStatus.NO_CONTENT);
 		} catch (Throwable e) {
@@ -202,9 +207,10 @@ public class GroupController {
 		ResponseEntity<String> resEntity;
 		try {
 //			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request, microsoft.getReqScopes(MicrosoftScopes.Group.DeleteOwner.values()));			
-			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getAuthSessionObject(request);
-			
-			HeaderOption option = new HeaderOption("Authorization", "Bearer " + result.accessToken());			
+//			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getSessionPrincipal(request);
+			String accessToken = microsoft.getAccessTokenFromSession(request);
+
+			HeaderOption option = new HeaderOption("Authorization", "Bearer " + accessToken);			
 			graphClientWrapper.getGraphServiceClient().groups(groupId).owners(userId).reference().buildRequest(Arrays.asList(option)).delete();
 			resEntity = new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		} catch (Throwable e) {
@@ -230,9 +236,10 @@ public class GroupController {
 		ResponseEntity<String> resEntity;
 		try {
 //			IAuthenticationResult result = microsoft.getAuthResultBySilentFlow(request, microsoft.getReqScopes(MicrosoftScopes.Group.DeleteMember.values()));
-			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getAuthSessionObject(request);
-			
-			HeaderOption option = new HeaderOption("Authorization", "Bearer " + result.accessToken());			
+//			IAuthenticationResult result = (IAuthenticationResult) sessionManagementHelper.getSessionPrincipal(request);
+			String accessToken = microsoft.getAccessTokenFromSession(request);
+
+			HeaderOption option = new HeaderOption("Authorization", "Bearer " + accessToken);			
 			graphClientWrapper.getGraphServiceClient().groups(groupId).members(memberId).reference().buildRequest(Arrays.asList(option)).delete();
 			resEntity = new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		} catch (Throwable e) {
