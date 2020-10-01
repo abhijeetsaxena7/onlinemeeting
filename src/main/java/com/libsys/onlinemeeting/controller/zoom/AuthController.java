@@ -38,6 +38,7 @@ public class AuthController {
 		String accessToken = zoom.getAccessTokenValueFromSession(request);
 		ZoomClient zoomClient = ZoomClient.builder(accessToken).build();
 		User user = zoomClient.user().get();
+		zoom.storeAccessTokenInDb(request);
 		try {
 			response.sendRedirect(zoomConfig.getRedirectResponseUri() + "?emailId=" + user.getEmailId() + "&"
 					+ "sessionId=" + request.getSession().getId() + "&" + "userId=" + user.getId());
